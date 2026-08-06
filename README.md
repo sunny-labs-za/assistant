@@ -4,8 +4,8 @@ A fuller-featured [ZeroClaw](https://github.com/zeroclaw-labs/zeroclaw/) image f
 and unRAID.
 
 The upstream `ghcr.io/zeroclaw-labs/zeroclaw:debian` image ships without all optional packages. This
-build enables them (agent runtime, WhatsApp, RAG/PDF, browser, WASM plugins) and publishes
-multi-arch (`amd64` / `arm64`) Ubuntu 24.04 images.
+build enables them (agent runtime, WhatsApp, browser, WASM plugins) and publishes multi-arch
+(`amd64` / `arm64`) Ubuntu 24.04 images.
 
 ## Image
 
