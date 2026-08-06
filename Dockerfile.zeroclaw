@@ -1,0 +1,17 @@
+FROM alpine:latest AS builder
+ARG TARGETARCH
+WORKDIR /builder
+COPY . .
+RUN case "$TARGETARCH" in \
+      amd64) VARIANT=x86_64-unknown-linux-gnu ;; \
+      arm64) VARIANT=aarch64-unknown-linux-gnu ;; \
+      *) echo "Unsupported architecture: $TARGETARCH" >&2; exit 1 ;; \
+    esac \
+ && mv "zeroclaw-${VARIANT}/zeroclaw" ./zeroclaw
+
+FROM ubuntu:24.04
+COPY --from=builder --chmod=755 /builder/zeroclaw /usr/local/bin/zeroclaw
+COPY --from=builder /builder/web-dist /usr/share/zeroclawlabs/web/dist
+COPY src/* /usr/local/bin/
+
+ENTRYPOINT [ "entrypoint" ]
