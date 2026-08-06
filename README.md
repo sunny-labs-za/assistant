@@ -1,4 +1,6 @@
-# Sunny Assistant
+# Assistant
+
+## ZeroClaw
 
 A fuller-featured [ZeroClaw](https://github.com/zeroclaw-labs/zeroclaw/) image for Home Assistant OS
 and unRAID.
@@ -7,7 +9,7 @@ The upstream `ghcr.io/zeroclaw-labs/zeroclaw:debian` image ships without all opt
 build enables them (agent runtime, WhatsApp, browser, WASM plugins) and publishes multi-arch
 (`amd64` / `arm64`) Ubuntu 24.04 images.
 
-## Image
+### Image
 
 ```text
 ghcr.io/sunny-labs-za/zeroclaw:latest
@@ -15,11 +17,25 @@ ghcr.io/sunny-labs-za/zeroclaw:latest
 
 Also tagged with the upstream ZeroClaw release version.
 
+## Evolution Go
+
+A multi-arch (`amd64` / `arm64`) image for
+[Evolution Go](https://github.com/evolution-foundation/evolution-go), built from the latest upstream
+release.
+
+### Image
+
+```text
+ghcr.io/sunny-labs-za/evolution-go:latest
+```
+
+Also tagged with the upstream Evolution Go release version.
+
 ## Usage
 
 Pull and run like any other container. On Unraid, use the Docker Compose Community app.
 
-Docker Compose exmaple mapping to **/mnt/user/appdata** on Unraid & port **8080**
+Docker Compose example mapping to **/mnt/user/appdata** on Unraid:
 
 ```yml
 services:
@@ -41,7 +57,25 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  evolution_go:
+    image: ghcr.io/sunny-labs-za/evolution-go:latest
+    container_name: evolution-go
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      SERVER_PORT: "8080"
+      CLIENT_NAME: evolution
+      GLOBAL_API_KEY: ${EVOLUTION_API_KEY}
+      WADEBUG: INFO
+      LOGTYPE: console
+    volumes:
+      - /mnt/user/appdata/evolution-go/dbdata:/app/dbdata
+      - /mnt/user/appdata/evolution-go/logs:/app/logs
 ```
+
+Manager UI: `http://<host>:8081/manager/login`
 
 ## Credits
 

@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Dockerfile.zeroclaw'
+      - '.github/workflows/zeroclaw.yml'
   schedule:
     - cron: '0 3 * * 1'
   workflow_dispatch:

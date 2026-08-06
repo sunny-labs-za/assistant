@@ -1,0 +1,40 @@
+# Build context: evolution-foundation/evolution-go source tree
+# (make docker-build equivalent — compile inside the image)
+
+FROM golang:1.25.0-alpine AS build
+
+RUN apk add --no-cache git build-base libjpeg-turbo-dev libwebp-dev
+
+WORKDIR /build
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+ARG VERSION=dev
+RUN CGO_ENABLED=1 go build \
+      -ldflags "-s -w -X main.version=${VERSION}" \
+      -o server \
+      ./cmd/evolution-go
+
+FROM alpine:3.19.1 AS final
+
+# poppler-utils: pdftoppm for /send/media document thumbnails
+RUN apk add --no-cache tzdata ffmpeg libjpeg-turbo libwebp poppler-utils \
+ && mkdir -p /app/dbdata /app/logs
+
+WORKDIR /app
+
+COPY --from=build /build/server .
+COPY --from=build /build/manager/dist ./manager/dist
+COPY --from=build /build/VERSION ./VERSION
+
+ENV TZ=UTC
+ENV SERVER_PORT=8080
+
+EXPOSE 8080
+
+VOLUME ["/app/dbdata", "/app/logs"]
+
+ENTRYPOINT ["/app/server"]
