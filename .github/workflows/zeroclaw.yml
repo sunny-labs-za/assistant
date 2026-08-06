@@ -15,6 +15,7 @@ on:
         type: string
 
 permissions:
+  actions: write
   contents: read
   packages: write
 
@@ -57,6 +58,12 @@ jobs:
         with:
           toolchain: stable
 
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: zeroclaw
+          shared-key: web
+
       - name: Build web dashboard
         working-directory: zeroclaw
         run: cargo web build
@@ -93,6 +100,12 @@ jobs:
         with:
           toolchain: stable
           targets: ${{ matrix.platform.target }}
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: zeroclaw
+          shared-key: build-${{ matrix.platform.target }}
 
       - name: Build binary
         working-directory: zeroclaw
@@ -162,3 +175,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
