@@ -84,8 +84,10 @@ jobs:
       matrix:
         platform:
           - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-24.04
           - target: aarch64-unknown-linux-gnu
-    runs-on: ubuntu-latest
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.platform.runner }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -93,10 +95,6 @@ jobs:
           repository: zeroclaw-labs/zeroclaw
           ref: ${{ needs.prepare.outputs.tag }}
           path: zeroclaw
-
-      - name: Install cross-linker (ARM64)
-        if: matrix.platform.target == 'aarch64-unknown-linux-gnu'
-        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -113,14 +111,13 @@ jobs:
       - name: Build binary
         working-directory: zeroclaw
         env:
-          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
           RUSTFLAGS: "-C strip=symbols"
         run: |
           cargo build \
             --release \
             --locked \
             --target ${{ matrix.platform.target }} \
-            --features agent-runtime,whatsapp-web,channels-full,browser-native,plugins-wasm,ci-all
+            --features agent-runtime,whatsapp-web,channel-matrix,browser-native,plugins-wasm,observability-prometheus
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
