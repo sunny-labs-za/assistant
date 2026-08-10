@@ -120,7 +120,7 @@ jobs:
             --release \
             --locked \
             --target ${{ matrix.platform.target }} \
-            --features agent-runtime,whatsapp-web,channel-full,browser-native,plugins-wasm,ci-all
+            --features agent-runtime,whatsapp-web,channels-full,browser-native,plugins-wasm,ci-all
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
